@@ -1,0 +1,26 @@
+{
+    "name": "wontonee/razorpay",
+    "description": "Razorpay payment gateway for bagisto laravel open source ecommerce platform.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Wontonee\\Razorpay\\": "src/"
+        }
+    },
+	"extra": {
+        "laravel": {
+            "providers": [
+                "Wontonee\\Razorpay\\Providers\\RazorpayServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "authors": [
+        {
+            "name": "Saju G",
+            "email": "saju.g@wontonetech.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}

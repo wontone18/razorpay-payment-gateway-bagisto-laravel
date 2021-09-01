@@ -5,7 +5,7 @@
 @stop
 
 @section('content-wrapper')
-<form name='razorpayform' action="verify.php" method="POST">
+<form name='razorpayform' action="razorpaycheck" method="POST">
     <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
     <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
 </form>

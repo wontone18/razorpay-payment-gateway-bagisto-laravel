@@ -5,9 +5,10 @@ namespace Wontonee\Razorpay\Http\Controllers;
 
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Http\Request;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
+
 
 class RazorpayController extends Controller
 {
@@ -35,7 +36,7 @@ class RazorpayController extends Controller
      * @return \Illuminate\View\View
      */
 
-    public function redirect()
+    public function redirect(Request $request)
     {
 
         $cart = Cart::getCart();
@@ -54,7 +55,7 @@ class RazorpayController extends Controller
         //
         $orderData = [
             'receipt'         => $cart->id,
-            'amount'          => $total_amount, // 2000 rupees in paise
+            'amount'          => $total_amount, 
             'currency'        => 'INR',
             'payment_capture' => 1 // auto capture
         ];
@@ -63,18 +64,20 @@ class RazorpayController extends Controller
 
         $razorpayOrderId = $razorpayOrder['id'];
 
-        $_SESSION['razorpay_order_id'] = $razorpayOrderId;
+       // $_SESSION['razorpay_order_id'] = $razorpayOrderId;
+
+        $request->session()->put('razorpay_order_id',$razorpayOrderId);
 
         $displayAmount = $amount = $orderData['amount'];
 
         $data = [
             "key"               => core()->getConfigData('sales.paymentmethods.razorpay.key_id'),
-            "amount"            => $amount,
+            "amount"            => $orderData['amount'],
             "name"              => $billingAddress->name,
-            "description"       => "-",
-            "image"             => "https://s29.postimg.org/r6dj1g85z/daft_punk.jpg",
+            "description"       => "RazorPay payment collection for the order - " . $cart->id,
+            "image"             => "https://www.wontonee.com/wp-content/uploads/2020/12/wontonee-black.png",
             "prefill"           => [
-                "name"              => "Daft Punk",
+                "name"              => $billingAddress->name,
                 "email"             => $billingAddress->email,
                 "contact"           => $billingAddress->phone,
             ],
@@ -89,30 +92,28 @@ class RazorpayController extends Controller
         ];
 
         $json = json_encode($data);
-        return view('razorpay::razorpay-redirect')->with(compact('data','json'));
+        return view('razorpay::razorpay-redirect')->with(compact('data', 'json'));
     }
 
     /**
      * verify for automatic 
      */
-    public function verify()
+    public function verify(Request $request)
     {
-
+        include __DIR__ . '/../../razorpay-php/Razorpay.php';
         $success = true;
-
         $error = "Payment Failed";
 
-        if (empty($_POST['razorpay_payment_id']) === false) {
+        if (empty($request->input('razorpay_payment_id')) === false) {
             $api = new Api(core()->getConfigData('sales.paymentmethods.razorpay.key_id'), core()->getConfigData('sales.paymentmethods.razorpay.secret'));
-
             try {
                 // Please note that the razorpay order ID must
                 // come from a trusted source (session here, but
                 // could be database or something else)
                 $attributes = array(
-                    'razorpay_order_id' => $_SESSION['razorpay_order_id'],
-                    'razorpay_payment_id' => $_POST['razorpay_payment_id'],
-                    'razorpay_signature' => $_POST['razorpay_signature']
+                    'razorpay_order_id' => $request->session()->get('razorpay_order_id'),
+                    'razorpay_payment_id' => $request->input('razorpay_payment_id'),
+                    'razorpay_signature' =>  $request->input('razorpay_signature')
                 );
 
                 $api->utility->verifyPaymentSignature($attributes);
@@ -121,15 +122,14 @@ class RazorpayController extends Controller
                 $error = 'Razorpay Error : ' . $e->getMessage();
             }
         }
-
         if ($success === true) {
-            $html = "<p>Your payment was successful</p>
-             <p>Payment ID: {$_POST['razorpay_payment_id']}</p>";
+            $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+            Cart::deActivateCart();
+            session()->flash('order', $order);
+            return redirect()->route('shop.checkout.success');
         } else {
-            $html = "<p>Your payment failed</p>
-             <p>{$error}</p>";
+            session()->flash('error', 'Razorpay payment either cancelled or transaction failure.');
+            return redirect()->route('shop.checkout.cart.index');
         }
-
-        echo $html;
     }
 }
