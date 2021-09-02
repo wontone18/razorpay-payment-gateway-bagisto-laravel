@@ -5,6 +5,7 @@ namespace Wontonee\Razorpay\Http\Controllers;
 
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
+use Webkul\Sales\Repositories\InvoiceRepository;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
@@ -18,6 +19,12 @@ class RazorpayController extends Controller
      * @var \Webkul\Sales\Repositories\OrderRepository
      */
     protected $orderRepository;
+    /**
+     * InvoiceRepository $invoiceRepository
+     *
+     * @var \Webkul\Sales\Repositories\InvoiceRepository
+     */
+    protected $invoiceRepository;
 
     /**
      * Create a new controller instance.
@@ -25,9 +32,10 @@ class RazorpayController extends Controller
      * @param  \Webkul\Attribute\Repositories\OrderRepository  $orderRepository
      * @return void
      */
-    public function __construct(OrderRepository $orderRepository)
+    public function __construct(OrderRepository $orderRepository,  InvoiceRepository $invoiceRepository)
     {
         $this->orderRepository = $orderRepository;
+        $this->invoiceRepository = $invoiceRepository;
     }
 
     /**
@@ -55,7 +63,7 @@ class RazorpayController extends Controller
         //
         $orderData = [
             'receipt'         => $cart->id,
-            'amount'          => $total_amount, 
+            'amount'          => $total_amount,
             'currency'        => 'INR',
             'payment_capture' => 1 // auto capture
         ];
@@ -64,9 +72,9 @@ class RazorpayController extends Controller
 
         $razorpayOrderId = $razorpayOrder['id'];
 
-       // $_SESSION['razorpay_order_id'] = $razorpayOrderId;
+        // $_SESSION['razorpay_order_id'] = $razorpayOrderId;
 
-        $request->session()->put('razorpay_order_id',$razorpayOrderId);
+        $request->session()->put('razorpay_order_id', $razorpayOrderId);
 
         $displayAmount = $amount = $orderData['amount'];
 
@@ -124,12 +132,32 @@ class RazorpayController extends Controller
         }
         if ($success === true) {
             $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+            $this->orderRepository->update(['status' => 'processing'], $order->id);
+            if ($order->canInvoice()) {
+                $this->invoiceRepository->create($this->prepareInvoiceData($order));
+            }
             Cart::deActivateCart();
             session()->flash('order', $order);
+            // Order and prepare invoice
             return redirect()->route('shop.checkout.success');
         } else {
             session()->flash('error', 'Razorpay payment either cancelled or transaction failure.');
             return redirect()->route('shop.checkout.cart.index');
         }
+    }
+    /**
+     * Prepares order's invoice data for creation.
+     *
+     * @return array
+     */
+    protected function prepareInvoiceData($order)
+    {
+        $invoiceData = ["order_id" => $order->id,];
+
+        foreach ($order->items as $item) {
+            $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
+        }
+
+        return $invoiceData;
     }
 }
