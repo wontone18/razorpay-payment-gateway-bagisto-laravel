@@ -15,15 +15,13 @@ Razorpay is a popular payment gateway in india. This package provides a addition
  'key-id'                      => 'Key Id',
  'key-secret'                      => 'Key Secret',
 ```
-4. Now open the command prompt and run `composer dump-autoload`.
-5. Now run `php artisan config:cache`
-6. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway razorpay. 
-7. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
+4. Now run `php artisan config:cache`
+5. Now go to your bagisto admin section `admin/configuration/sales/paymentmethods` you will see the new payment gateway razorpay. 
+6. Now open `app\Http\Middleware\VerifyCsrfToken.php` and add this route to the exception list.
 ```sh
 protected $except = [
                   '/razorpaycheck',
            ];
-
 ```
 
 ## Manual Installation
