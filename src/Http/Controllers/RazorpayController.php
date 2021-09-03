@@ -63,7 +63,7 @@ class RazorpayController extends Controller
         //
         $orderData = [
             'receipt'         => $cart->id,
-            'amount'          => $total_amount,
+            'amount'          => $total_amount* 100,
             'currency'        => 'INR',
             'payment_capture' => 1 // auto capture
         ];
