@@ -3,7 +3,7 @@
 return [
     [
         'key'    => 'sales.paymentmethods.razorpay',
-        'name'   => 'Razorpay',
+        'name'   => 'razorpay::app.admin.system.razorpay',
         'sort'   => 5,
         'fields' => [
             [
@@ -19,18 +19,18 @@ return [
                 'type'          => 'textarea',
                 'channel_based' => false,
                 'locale_based'  => true,
-            ], 
+            ],
             [
                 'name'          => 'key_id',
-                'title'         => 'admin::app.admin.system.key-id',
+                'title'         => 'razorpay::app.admin.system.key-id',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
                 'locale_based'  => true,
-            ],	
+            ],
 			[
                 'name'          => 'secret',
-                'title'         => 'admin::app.admin.system.key-secret',
+                'title'         => 'razorpay::app.admin.system.key-secret',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,

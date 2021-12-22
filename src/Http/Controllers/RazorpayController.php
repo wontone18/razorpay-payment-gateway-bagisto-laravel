@@ -83,7 +83,7 @@ class RazorpayController extends Controller
             "amount"            => $orderData['amount'],
             "name"              => $billingAddress->name,
             "description"       => "RazorPay payment collection for the order - " . $cart->id,
-            "image"             => "https://www.wontonee.com/wp-content/uploads/2020/12/wontonee-black.png",
+            "image"             => \Illuminate\Support\Facades\Storage::url(core()->getConfigData('general.design.admin_logo.logo_image')) ?: '',
             "prefill"           => [
                 "name"              => $billingAddress->name,
                 "email"             => $billingAddress->email,
@@ -94,7 +94,7 @@ class RazorpayController extends Controller
                 "merchant_order_id" => $cart->id,
             ],
             "theme"             => [
-                "color"             => "#F37254"
+                // "color"             => "#F37254"
             ],
             "order_id"          => $razorpayOrderId,
         ];
@@ -104,7 +104,7 @@ class RazorpayController extends Controller
     }
 
     /**
-     * verify for automatic 
+     * verify for automatic
      */
     public function verify(Request $request)
     {
@@ -131,16 +131,21 @@ class RazorpayController extends Controller
             }
         }
         if ($success === true) {
+
             $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+
             $this->orderRepository->update(['status' => 'processing'], $order->id);
+
             if ($order->canInvoice()) {
                 $this->invoiceRepository->create($this->prepareInvoiceData($order));
             }
+
             Cart::deActivateCart();
             session()->flash('order', $order);
             // Order and prepare invoice
             return redirect()->route('shop.checkout.success');
         } else {
+
             session()->flash('error', 'Razorpay payment either cancelled or transaction failure.');
             return redirect()->route('shop.checkout.cart.index');
         }
