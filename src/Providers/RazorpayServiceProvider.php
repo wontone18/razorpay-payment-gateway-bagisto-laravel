@@ -13,9 +13,9 @@ class RazorpayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-		
         $this->loadRoutesFrom(__DIR__.'/../Http/routes.php');
         $this->loadViewsFrom(__DIR__. '/../Resources/views', 'razorpay');
+        $this->loadTranslationsFrom(__DIR__.'/../Resources/lang', 'razorpay');
     }
 
     /**
@@ -27,7 +27,7 @@ class RazorpayServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
     }
-    
+
     /**
      * Register package config.
      *
