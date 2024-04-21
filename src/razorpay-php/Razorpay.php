@@ -1,10 +1,29 @@
 <?php
 
-// Include Requests
-require_once __DIR__.'/libs/Requests-1.6.1/library/Requests.php';
+// Include Requests only if not already defined
+if (!defined('REQUESTS_SILENCE_PSR0_DEPRECATIONS'))
+{
+    define('REQUESTS_SILENCE_PSR0_DEPRECATIONS', true);
+}
 
-// Register requests autoloader
-Requests::register_autoloader();
+if (class_exists('WpOrg\Requests\Autoload') === false)
+{
+    require_once __DIR__.'/libs/Requests-2.0.4/src/Autoload.php';
+}
+
+try
+{
+    WpOrg\Requests\Autoload::register();
+
+    if (version_compare(Requests::VERSION, '1.6.0') === -1)
+    {
+        throw new Exception('Requests class found but did not match');
+    }
+}
+catch (\Exception $e)
+{
+    throw new Exception('Requests class found but did not match');
+}
 
 spl_autoload_register(function ($class)
 {

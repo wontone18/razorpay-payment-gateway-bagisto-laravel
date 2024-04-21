@@ -1,10 +1,9 @@
 <?php
 
-Route::group([
-    //  'prefix'     => 'razorpay',
-       'middleware' => ['web', 'theme', 'locale', 'currency']
-   ], function () {
+use Illuminate\Support\Facades\Route;
+use Wontonee\Razorpay\Http\Controllers\RazorpayController;
 
-       Route::get('razorpay-redirect','Wontonee\Razorpay\Http\Controllers\RazorpayController@redirect')->name('razorpay.process');
-       Route::post('razorpaycheck','Wontonee\Razorpay\Http\Controllers\RazorpayController@verify')->name('razorpay.callback'); 
+Route::group(['middleware' => ['web']], function () {
+    Route::get('razorpay-redirect', [RazorpayController::class, 'redirect'])->name('razorpay.process');
+    Route::post('razorpaycheck', [RazorpayController::class, 'verify'])->name('razorpay.callback');
 });

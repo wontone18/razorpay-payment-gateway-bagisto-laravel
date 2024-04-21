@@ -55,15 +55,17 @@ class RazorpayController extends Controller
         $discount_amount = $cart->discount_amount; // discount amount
         $total_amount =  ($cart->sub_total + $cart->tax_total + $shipping_rate) - $discount_amount; // total amount
 
-        $api = new Api(core()->getConfigData('sales.paymentmethods.razorpay.key_id'), core()->getConfigData('sales.paymentmethods.razorpay.secret'));
+        $api = new Api(core()->getConfigData('sales.payment_methods.razorpay.key_id'), core()->getConfigData('sales.payment_methods.razorpay.secret'));
+
+
 
         //
         // We create an razorpay order using orders api
         // Docs: https://docs.razorpay.com/docs/orders
         //
         $orderData = [
-            'receipt'         => $cart->id,
-            'amount'          => $total_amount* 100,
+            'receipt'         => "Receipt no. " . $cart->id,
+            'amount'          => $total_amount * 100,
             'currency'        => 'INR',
             'payment_capture' => 1 // auto capture
         ];
@@ -72,14 +74,14 @@ class RazorpayController extends Controller
 
         $razorpayOrderId = $razorpayOrder['id'];
 
-        // $_SESSION['razorpay_order_id'] = $razorpayOrderId;
+        $_SESSION['razorpay_order_id'] = $razorpayOrderId;
 
         $request->session()->put('razorpay_order_id', $razorpayOrderId);
 
         $displayAmount = $amount = $orderData['amount'];
 
         $data = [
-            "key"               => core()->getConfigData('sales.paymentmethods.razorpay.key_id'),
+            "key"               => core()->getConfigData('sales.payment_methods.razorpay.key_id'),
             "amount"            => $orderData['amount'],
             "name"              => $billingAddress->name,
             "description"       => "RazorPay payment collection for the order - " . $cart->id,
@@ -108,12 +110,13 @@ class RazorpayController extends Controller
      */
     public function verify(Request $request)
     {
+
         include __DIR__ . '/../../razorpay-php/Razorpay.php';
         $success = true;
         $error = "Payment Failed";
 
         if (empty($request->input('razorpay_payment_id')) === false) {
-            $api = new Api(core()->getConfigData('sales.paymentmethods.razorpay.key_id'), core()->getConfigData('sales.paymentmethods.razorpay.secret'));
+            $api = new Api(core()->getConfigData('sales.payment_methods.razorpay.key_id'), core()->getConfigData('sales.payment_methods.razorpay.secret'));
             try {
                 // Please note that the razorpay order ID must
                 // come from a trusted source (session here, but
@@ -139,7 +142,7 @@ class RazorpayController extends Controller
             Cart::deActivateCart();
             session()->flash('order', $order);
             // Order and prepare invoice
-            return redirect()->route('shop.checkout.success');
+            return redirect()->route('shop.checkout.onepage.success');
         } else {
             session()->flash('error', 'Razorpay payment either cancelled or transaction failure.');
             return redirect()->route('shop.checkout.cart.index');

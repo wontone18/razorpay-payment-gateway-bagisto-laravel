@@ -1,18 +1,17 @@
-@extends('shop::layouts.master')
-
-@section('page_title')
-    {{ __('RazorPay Checkout....') }}
-@stop
-
-@section('content-wrapper')
-<form name='razorpayform' action="razorpaycheck" method="POST">
-    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
-    <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
-</form>
-@endsection
-
-@push('scripts')
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Razorpay Gateway</title>
+</head>
+<body>
+    <form name='razorpayform' action="razorpaycheck" method="POST">
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
+    </form>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 // Checkout details as a json
 var options = <?php echo $json?>;
@@ -51,4 +50,5 @@ window.onload = (event) => {
 }
 
 </script>
-@endpush
+</body>
+</html>
