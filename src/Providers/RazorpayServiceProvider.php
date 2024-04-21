@@ -13,9 +13,9 @@ class RazorpayServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-		
-        $this->loadRoutesFrom(__DIR__.'/../Http/routes.php');
-        $this->loadViewsFrom(__DIR__. '/../Resources/views', 'razorpay');
+
+        $this->loadRoutesFrom(__DIR__ . '/../Http/routes.php');
+        $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'razorpay');
     }
 
     /**
@@ -27,7 +27,7 @@ class RazorpayServiceProvider extends ServiceProvider
     {
         $this->registerConfig();
     }
-    
+
     /**
      * Register package config.
      *
@@ -36,11 +36,19 @@ class RazorpayServiceProvider extends ServiceProvider
     protected function registerConfig()
     {
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/paymentmethods.php', 'paymentmethods'
+            dirname(__DIR__) . '/Config/paymentmethods.php',
+            'payment_methods'
         );
 
+        /*  $this->mergeConfigFrom(
+            dirname(__DIR__).'/Resources/views/lang/app.php',
+            'app'
+        );
+*/
+
         $this->mergeConfigFrom(
-            dirname(__DIR__) . '/Config/system.php', 'core'
+            dirname(__DIR__) . '/Config/system.php',
+            'core'
         );
     }
 }

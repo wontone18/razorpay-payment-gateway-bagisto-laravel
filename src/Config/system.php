@@ -2,27 +2,28 @@
 
 return [
     [
-        'key'    => 'sales.paymentmethods.razorpay',
+        'key'    => 'sales.payment_methods.razorpay',
+        'info'   => 'RazorPay extension created for bagisto by wontonee.',
         'name'   => 'Razorpay',
         'sort'   => 5,
         'fields' => [
             [
                 'name'          => 'title',
-                'title'         => 'admin::app.admin.system.title',
+                'title'         => 'RazorPay Payment Gateway',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
                 'locale_based'  => true,
             ], [
                 'name'          => 'description',
-                'title'         => 'admin::app.admin.system.description',
+                'title'         => '',
                 'type'          => 'textarea',
                 'channel_based' => false,
                 'locale_based'  => true,
             ], 
             [
                 'name'          => 'key_id',
-                'title'         => 'admin::app.admin.system.key-id',
+                'title'         => 'key-id',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
@@ -30,7 +31,7 @@ return [
             ],	
 			[
                 'name'          => 'secret',
-                'title'         => 'admin::app.admin.system.key-secret',
+                'title'         => 'key-secret',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,
@@ -38,7 +39,7 @@ return [
             ],
             [
                 'name'          => 'active',
-                'title'         => 'admin::app.admin.system.status',
+                'title'         => 'admin::app.configuration.index.sales.payment-methods.status',
                 'type'          => 'boolean',
                 'validation'    => 'required',
                 'channel_based' => false,

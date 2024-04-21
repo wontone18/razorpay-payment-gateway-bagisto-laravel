@@ -7,6 +7,6 @@ return [
         'description' => 'Razorpay',
         'class'       => 'Wontonee\Razorpay\Payment\Razorpay',
         'active'      => true,
-        'sort'        => 5,
+       // 'sort'        => 5,
     ],
 ];
