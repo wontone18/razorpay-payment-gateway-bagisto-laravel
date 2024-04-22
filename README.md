@@ -8,7 +8,7 @@ Razorpay is a popular payment gateway in India. This package provides strong sup
 composer require wontonee/razorpay
 ```
 
-2. Open config/app.php and register the Razorpay provider:
+2. Open `config/app.php` and register the Razorpay provider:
 ```sh
 'providers' => [
         // Razorpay provider
