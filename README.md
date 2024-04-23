@@ -17,13 +17,14 @@ composer require wontonee/razorpay
 ```
 3. Navigate to the `admin panel -> Configure/Payment Methods`, where Razorpay will be visible at the end of the payment method list.
 
-5. Open app\Http\Middleware\VerifyCsrfToken.php and add this route to the exception list:
+4. Open app\Http\Middleware\VerifyCsrfToken.php and add this route to the exception list:
 ```sh
 protected $except = [
                   '/razorpaycheck',
            ];
 ```
-6. Now run 
+
+5. Now run 
 ```sh
 php artisan config:cache
 ```
