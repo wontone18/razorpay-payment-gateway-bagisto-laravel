@@ -1,19 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Razorpay Gateway</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            justify-content: flex-start;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 20px;
+            /* Adjust margin-top as needed */
+            animation: slideIn 1s ease-out forwards;
+            /* Animation */
+        }
+
+        @keyframes slideIn {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <form name='razorpayform' action="razorpaycheck" method="POST">
+        <div class="message">
+            <strong>Note: Don't close this window or refresh it. After processing the payment, wait for
+                redirection...</strong>
+        </div>
         <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
-        <input type="hidden" name="razorpay_signature"  id="razorpay_signature" >
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
     </form>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-// Checkout details as a json
+    <script>
+        // Checkout details as a json
 var options = <?php echo $json?>;
 
 /**
@@ -49,6 +85,7 @@ window.onload = (event) => {
     event.preventDefault();
 }
 
-</script>
+    </script>
 </body>
+
 </html>
