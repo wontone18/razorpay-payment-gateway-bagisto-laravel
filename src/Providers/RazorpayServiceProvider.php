@@ -16,6 +16,7 @@ class RazorpayServiceProvider extends ServiceProvider
 
         $this->loadRoutesFrom(__DIR__ . '/../Http/routes.php');
         $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'razorpay');
+        
     }
 
     /**
@@ -39,12 +40,6 @@ class RazorpayServiceProvider extends ServiceProvider
             dirname(__DIR__) . '/Config/paymentmethods.php',
             'payment_methods'
         );
-
-        /*  $this->mergeConfigFrom(
-            dirname(__DIR__).'/Resources/views/lang/app.php',
-            'app'
-        );
-*/
 
         $this->mergeConfigFrom(
             dirname(__DIR__) . '/Config/system.php',

@@ -5,6 +5,7 @@ namespace Wontonee\Razorpay\Http\Controllers;
 
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
+use Webkul\Sales\Transformers\OrderResource;
 use Webkul\Sales\Repositories\InvoiceRepository;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
@@ -99,6 +100,7 @@ class RazorpayController extends Controller
                 "color"             => "#F37254"
             ],
             "order_id"          => $razorpayOrderId,
+            "callback_url" => route('razorpay.callback')
         ];
 
         $json = json_encode($data);
@@ -114,6 +116,7 @@ class RazorpayController extends Controller
         include __DIR__ . '/../../razorpay-php/Razorpay.php';
         $success = true;
         $error = "Payment Failed";
+
 
         if (empty($request->input('razorpay_payment_id')) === false) {
             $api = new Api(core()->getConfigData('sales.payment_methods.razorpay.key_id'), core()->getConfigData('sales.payment_methods.razorpay.secret'));
@@ -134,13 +137,16 @@ class RazorpayController extends Controller
             }
         }
         if ($success === true) {
-            $order = $this->orderRepository->create(Cart::prepareDataForOrder());
+            $cart = Cart::getCart();
+            $data = (new OrderResource($cart))->jsonSerialize(); // new class v2.2
+            $order = $this->orderRepository->create($data);
+           // $order = $this->orderRepository->create(Cart::prepareDataForOrder()); // removed for v2.2
             $this->orderRepository->update(['status' => 'processing'], $order->id);
             if ($order->canInvoice()) {
                 $this->invoiceRepository->create($this->prepareInvoiceData($order));
             }
             Cart::deActivateCart();
-            session()->flash('order', $order);
+            session()->flash('order_id', $order->id); // line instead of $order in v2.1
             // Order and prepare invoice
             return redirect()->route('shop.checkout.onepage.success');
         } else {
