@@ -1,6 +1,8 @@
 # Bagisto Razorpay Payment Gateway
 Razorpay is a popular payment gateway in India. This package provides strong support for users to integrate the Razorpay payment gateway into their Bagisto Laravel e-commerce applications.
 
+**<span style="color:red;">Support Bagisto v2.2. For Bagisto 2.1, you can downgrade the package to 4.2.2</span>**
+
 ## Installation
 
 1. Use the command prompt to install this package:
