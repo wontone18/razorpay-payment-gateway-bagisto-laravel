@@ -3,6 +3,9 @@ Razorpay is a popular payment gateway in India. This package provides strong sup
 
 **<span style="color:red;">Support Bagisto v2.2. For Bagisto 2.1, you can downgrade the package to 4.2.2</span>**
 
+**<span style="color:red;">From 15 January 2025, you must have a valid license key to use this extension. It costs only ₹400/year, including updates and support. Use this link to get your license key: [Get License Key](https://pages.razorpay.com/pl_PcXc750AtzmCEE/view)</span>**
+
+
 ## Installation
 
 1. Use the command prompt to install this package:
