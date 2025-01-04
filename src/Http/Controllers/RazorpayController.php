@@ -10,7 +10,7 @@ use Webkul\Sales\Repositories\InvoiceRepository;
 use Illuminate\Http\Request;
 use Razorpay\Api\Api;
 use Razorpay\Api\Errors\SignatureVerificationError;
-
+use Illuminate\Support\Facades\Http;
 
 class RazorpayController extends Controller
 {
@@ -47,6 +47,7 @@ class RazorpayController extends Controller
 
     public function redirect(Request $request)
     {
+        // Check license segment
 
         $cart = Cart::getCart();
         $billingAddress = $cart->billing_address;
@@ -56,55 +57,76 @@ class RazorpayController extends Controller
         $discount_amount = $cart->discount_amount; // discount amount
         $total_amount =  ($cart->sub_total + $cart->tax_total + $shipping_rate) - $discount_amount; // total amount
 
-        $api = new Api(core()->getConfigData('sales.payment_methods.razorpay.key_id'), core()->getConfigData('sales.payment_methods.razorpay.secret'));
-
-
-
-        //
-        // We create an razorpay order using orders api
-        // Docs: https://docs.razorpay.com/docs/orders
-        //
-        $orderData = [
-            'receipt'         => "Receipt no. " . $cart->id,
-            'amount'          => $total_amount * 100,
-            'currency'        => 'INR',
-            'payment_capture' => 1 // auto capture
+        $apiData = [
+            'key' => core()->getConfigData('sales.payment_methods.razorpay.key_id'),
+            'secret' => core()->getConfigData('sales.payment_methods.razorpay.secret'),
+            'license' => core()->getConfigData('sales.payment_methods.razorpay.license_keyid'),
+            'product_id' => 'RazorPayBagisto',
+            'receipt' => "Receipt no. " . $cart->id,
+            'amount' => $total_amount * 100,
+            'currency' => 'INR',
+            'name' => $billingAddress->name,
+            'description' => 'RazorPay payment collection for the order - ' . $cart->id,
+            'image' => 'https://www.wontonee.com/wp-content/uploads/2020/12/wontonee-black.png',
+            'prefill' => [
+                'name' => $billingAddress->name,
+                'email' => $billingAddress->email,
+                'contact' => $billingAddress->phone,
+            ],
+            'notes' => [
+                'address' => $billingAddress->address,
+                'merchant_order_id' => $cart->id,
+            ],
+            'theme' => [
+                'color' => '#F37254'
+            ],
         ];
 
-        $razorpayOrder = $api->order->create($orderData);
+        $response = Http::post('https://myapps.wontonee.com/api/process-razorpay-data', $apiData);
+        if ($response->successful()) {
+            $responseData = $response->json();
+            $razorpayOrderId = $responseData['razorpayOrderId'] ?? null;
 
-        $razorpayOrderId = $razorpayOrder['id'];
+            if ($razorpayOrderId) {
+                $_SESSION['razorpay_order_id'] = $razorpayOrderId;
 
-        $_SESSION['razorpay_order_id'] = $razorpayOrderId;
+                $request->session()->put('razorpay_order_id', $razorpayOrderId);
 
-        $request->session()->put('razorpay_order_id', $razorpayOrderId);
+                $displayAmount = $amount =  $apiData['amount'];
 
-        $displayAmount = $amount = $orderData['amount'];
+                $data = [
+                    "key"               => core()->getConfigData('sales.payment_methods.razorpay.key_id'),
+                    "amount"            =>  $apiData['amount'],
+                    "name"              => $billingAddress->name,
+                    "description"       => "RazorPay payment collection for the order - " . $cart->id,
+                    "image"             => "https://www.wontonee.com/wp-content/uploads/2020/12/wontonee-black.png",
+                    "prefill"           => [
+                        "name"              => $billingAddress->name,
+                        "email"             => $billingAddress->email,
+                        "contact"           => $billingAddress->phone,
+                    ],
+                    "notes"             => [
+                        "address"           => $billingAddress->address,
+                        "merchant_order_id" => $cart->id,
+                    ],
+                    "theme"             => [
+                        "color"             => "#F37254"
+                    ],
+                    "order_id"          => $razorpayOrderId,
+                    "callback_url" => route('razorpay.callback')
+                ];
 
-        $data = [
-            "key"               => core()->getConfigData('sales.payment_methods.razorpay.key_id'),
-            "amount"            => $orderData['amount'],
-            "name"              => $billingAddress->name,
-            "description"       => "RazorPay payment collection for the order - " . $cart->id,
-            "image"             => "https://www.wontonee.com/wp-content/uploads/2020/12/wontonee-black.png",
-            "prefill"           => [
-                "name"              => $billingAddress->name,
-                "email"             => $billingAddress->email,
-                "contact"           => $billingAddress->phone,
-            ],
-            "notes"             => [
-                "address"           => $billingAddress->address,
-                "merchant_order_id" => $cart->id,
-            ],
-            "theme"             => [
-                "color"             => "#F37254"
-            ],
-            "order_id"          => $razorpayOrderId,
-            "callback_url" => route('razorpay.callback')
-        ];
-
-        $json = json_encode($data);
-        return view('razorpay::razorpay-redirect')->with(compact('data', 'json'));
+                $json = json_encode($data);
+                return view('razorpay::razorpay-redirect')->with(compact('data', 'json'));
+            } else {
+                session()->flash('error', $responseData['error']);
+                return redirect()->route('shop.checkout.cart.index');
+            }
+        } else {
+            $responseData = $response->json();
+            session()->flash('error', $responseData['error']);
+            return redirect()->route('shop.checkout.cart.index');
+        }
     }
 
     /**
@@ -116,8 +138,6 @@ class RazorpayController extends Controller
         include __DIR__ . '/../../razorpay-php/Razorpay.php';
         $success = true;
         $error = "Payment Failed";
-
-
         if (empty($request->input('razorpay_payment_id')) === false) {
             $api = new Api(core()->getConfigData('sales.payment_methods.razorpay.key_id'), core()->getConfigData('sales.payment_methods.razorpay.secret'));
             try {
@@ -140,8 +160,9 @@ class RazorpayController extends Controller
             $cart = Cart::getCart();
             $data = (new OrderResource($cart))->jsonSerialize(); // new class v2.2
             $order = $this->orderRepository->create($data);
-           // $order = $this->orderRepository->create(Cart::prepareDataForOrder()); // removed for v2.2
+            // $order = $this->orderRepository->create(Cart::prepareDataForOrder()); // removed for v2.2
             $this->orderRepository->update(['status' => 'processing'], $order->id);
+            //Payorder ID of RazorPay
             if ($order->canInvoice()) {
                 $this->invoiceRepository->create($this->prepareInvoiceData($order));
             }
