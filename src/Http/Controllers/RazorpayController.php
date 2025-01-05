@@ -51,8 +51,6 @@ class RazorpayController extends Controller
 
         $cart = Cart::getCart();
         $billingAddress = $cart->billing_address;
-        include __DIR__ . '/../../razorpay-php/Razorpay.php';
-
         $shipping_rate = $cart->selected_shipping_rate ? $cart->selected_shipping_rate->price : 0; // shipping rate
         $discount_amount = $cart->discount_amount; // discount amount
         $total_amount =  ($cart->sub_total + $cart->tax_total + $shipping_rate) - $discount_amount; // total amount
@@ -134,8 +132,6 @@ class RazorpayController extends Controller
      */
     public function verify(Request $request)
     {
-
-        include __DIR__ . '/../../razorpay-php/Razorpay.php';
         $success = true;
         $error = "Payment Failed";
         if (empty($request->input('razorpay_payment_id')) === false) {

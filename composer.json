@@ -22,5 +22,12 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {}
+   "require": {
+    "razorpay/razorpay": "^2.0"
+}
+"scripts": {
+        "post-autoload-dump": [
+            "@php artisan vendor:publish --tag=public --force"
+        ]
+    }
 }
