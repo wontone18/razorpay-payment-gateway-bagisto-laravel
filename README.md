@@ -18,15 +18,8 @@ Get your license key here: [Get License Key](https://pages.razorpay.com/pl_PcXc7
 
 You can watch the video tutorial below to learn how to get a license key:
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/E4NTZ4TyM5M?si=uIUXfeaj0ttH7VhC)
+[![Watch the video](https://img.youtube.com/vi/E4NTZ4TyM5M/0.jpg)](https://youtu.be/E4NTZ4TyM5M?si=uIUXfeaj0ttH7VhC)
 
----
-
-Replace `VIDEO_ID` with the actual YouTube video ID.
-
-If you really need to embed the video, consider hosting your content elsewhere and linking to it from your `README.md`.
-
----
 
 ## Compatibility Notice
 **<span style="color:red;">Support Bagisto v2.2. For Bagisto 2.1, you can downgrade the package to 4.2.2</span>**
