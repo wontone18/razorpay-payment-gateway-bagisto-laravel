@@ -11,9 +11,6 @@ You must take a license from the website [https://myapps.wontonee.com/login](htt
 - **Paid License**: Valid for 1 year and costs only ₹400.  
   Includes updates and support.
 
-**Important**: From **15 January 2025**, a valid license key is required to use this extension.  
-Get your license key here: [Get License Key](https://pages.razorpay.com/pl_PcXc750AtzmCEE/view).
-
 ## How to Get a License Key
 
 You can watch the video tutorial below to learn how to get a license key:
