@@ -14,6 +14,18 @@ You must take a license from the website [https://myapps.wontonee.com/login](htt
 **Important**: From **15 January 2025**, a valid license key is required to use this extension.  
 Get your license key here: [Get License Key](https://pages.razorpay.com/pl_PcXc750AtzmCEE/view).
 
+## How to Get a License Key
+
+You can watch the video tutorial below to learn how to get a license key:
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://youtu.be/E4NTZ4TyM5M?si=uIUXfeaj0ttH7VhC)
+
+---
+
+Replace `VIDEO_ID` with the actual YouTube video ID.
+
+If you really need to embed the video, consider hosting your content elsewhere and linking to it from your `README.md`.
+
 ---
 
 ## Compatibility Notice
